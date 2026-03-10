@@ -7,7 +7,7 @@ cd $LABTAINER_DIR/scripts/labtainer-student
 rebuild -f -b processnice
 
 #cho chắc:
-imodule https://github.com/SangPK34/An-toan-he-dieu-hanh/raw/main/lab2025.tar
+imodule https://github.com/SangPK34/An-toan-he-dieu-hanh/raw/main/BTCN/lab2025.tar
 ```
 # Bài 1:
 ```bash
