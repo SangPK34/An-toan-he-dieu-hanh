@@ -11,5 +11,6 @@ imodule https://github.com/SangPK34/An-toan-he-dieu-hanh/raw/main/lab2025.tar
 Bài1:
 ```bash
 chmod +x ~/labtainer/trunk/labs/processnice/instr_config/*.sh
+find ~/labtainer/trunk/labs/processnice -exec touch {} +
 labtainer processnice
 ```
