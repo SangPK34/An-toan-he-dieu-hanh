@@ -1,4 +1,5 @@
 ```bash
+wget https://github.com/SangPK34/An-toan-he-dieu-hanh/raw/main/lab2025.tar -O lab2025.tar && tar -xvf lab2025.tar
 mv ../../labs/processnice/dockerfiles/Dockerfile.process_nice.process_nice.student ../../labs/processnice/dockerfiles/Dockerfile.processnice.process_nice.student
 rebuild -f -b processnice
 imodule https://github.com/SangPK34/An-toan-he-dieu-hanh/raw/main/lab2025.tar
