@@ -1,3 +1,4 @@
+# Khởi đầu:
 ```bash
 $LABTAINER_DIR/labs
 wget https://github.com/SangPK34/An-toan-he-dieu-hanh/raw/main/BTCN/lab2025.tar -O lab2025.tar && tar -xvf lab2025.tar
@@ -8,17 +9,24 @@ rebuild -f -b processnice
 #cho chắc:
 imodule https://github.com/SangPK34/An-toan-he-dieu-hanh/raw/main/lab2025.tar
 ```
-Bài1:
+# Bài 1:
 ```bash
 chmod +x ~/labtainer/trunk/labs/processnice/instr_config/*.sh
 find ~/labtainer/trunk/labs/processnice -exec touch {} +
 labtainer processnice
 ```
-Bài2:
+# Bài 2:
 ```bash
 find ~/labtainer/trunk/labs/oss_eval_auditd_n4_tien_4 -exec touch {} +
 docker rm -f $(docker ps -aq --filter name=igrader) 2>/dev/null
 find ~/labtainer/trunk/labs/oss_eval_auditd_n4_tien_4/instr_config -type f -exec sed -i 's/\r$//' {} +
 chmod -R +x ~/labtainer/trunk/labs/oss_eval_auditd_n4_tien_4/instr_config
 docker rmi oss_eval_auditd_n4_tien_4.ubuntu.student.grader 2>/dev/null
+```
+# Bài 3:
+```bash
+find ~/labtainer/trunk/labs/oss_eval_clamav_n4_minh_3 -exec touch {} +
+docker rm -f $(docker ps -aq --filter name=igrader) 2>/dev/null
+find ~/labtainer/trunk/labs/oss_eval_clamav_n4_minh_3/instr_config -type f -exec sed -i 's/\r$//' {} +
+chmod -R +x ~/labtainer/trunk/labs/oss_eval_clamav_n4_minh_3/instr_config
 ```
