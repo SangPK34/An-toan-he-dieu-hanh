@@ -13,7 +13,7 @@ Mục đích:
 ## Repository được chia thành hai phần chính:
 
 
-## 📁 DEMO
+## 📁 Android-Kernel-Exploitation
 
 Thư mục này chứa **demo bài tập lớn**.
 
