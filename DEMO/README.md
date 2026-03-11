@@ -165,12 +165,13 @@ Thuộc tính này cho phép ứng dụng chạy ngay sau khi thiết bị khở
 Factory Reset thông thường chỉ xóa dữ liệu trong các phân vùng:
 
 > ### /data
-> ### /cache
+> ### /cache  
 
 
 Trong khi đó ứng dụng được cài đặt trong phân vùng:
 
 > ### /system/priv-app/
+
 
 Do đó ứng dụng vẫn tồn tại sau khi reset thiết bị.
 
@@ -190,11 +191,26 @@ Video demo bên dưới  cho thấy các bước sau:
 * Ứng dụng hệ thống hoạt động ẩn
 * Dữ liệu nhập liệu được ghi nhận theo thời gian thực
 
-Video demo có thể xem tại đây:
+
+### Video
+
+<b>🎬 Video xem ở đây:</b>
+
+<br>
 
 
-### 🎬 https://www.facebook.com/share/v/18NQeqKrbS/
+<a href="https://vt.tiktok.com/ZSuSXesYg/">
+<img src="https://cdn.simpleicons.org/tiktok" width="22">
+</a>
+TikTok: https://vt.tiktok.com/ZSuSXesYg/
 
+<br>
+<br>
+
+<a href="https://facebook.com/share/v/18NQeqKrbS/">
+<img src="https://cdn.simpleicons.org/facebook" width="22">
+</a>
+Facebook: https://facebook.com/share/v/18NQeqKrbS/
 
 ---
 
