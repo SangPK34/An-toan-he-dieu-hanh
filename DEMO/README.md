@@ -1,79 +1,84 @@
-# Kernel – Khi người gác cổng trở thành kẻ tiếp tay
+# Kernel-Level Exploitation – Khi người gác cổng trở thành kẻ tiếp tay
 
 
 <br>
 
 <div align="center">
-
-<img width="1920"  src="https://github.com/user-attachments/assets/cfe4dd46-a3dc-4e56-9dce-909c4b7de68e" />
+  
+<img width="1920" src="https://github.com/user-attachments/assets/43810a62-8da5-48b0-98aa-6b2052ef5acc" />
 
 </div>
 
 
 # Giới thiệu
 
-Phần demo này minh họa một kịch bản tấn công khi **tầng Kernel của Android bị can thiệp**.
-
-Trong kiến trúc bảo mật của Android, Kernel đóng vai trò là lớp nền tảng kiểm soát toàn bộ hệ thống. Nếu tầng này bị phá vỡ, các cơ chế bảo mật ở tầng cao hơn như **SELinux, sandbox ứng dụng, và kiểm soát quyền truy cập** sẽ dễ bị đánh lừa.
-
-Demo này nhằm chứng minh rằng khi một Kernel độc hại được cài đặt, kẻ tấn công có thể:
-
-* Vô hiệu hóa cơ chế bảo vệ của hệ điều hành
-* Cài đặt ứng dụng hệ thống độc hại
-* Duy trì mã độc ngay cả sau khi **Factory Reset**
+Phần demo này minh họa một kịch bản tấn công khi **tầng Kernel của Android bị can thiệp**.  
+> Thiết bị thử nghiệm: Pixel 4 XL, Android 11
 
 ---
 
-# Tổng quan kịch bản
+Trong cấu trúc bảo mật của Android, Kernel là Gốc rễ của niềm tin (Root of Trust). Nếu nhân hệ điều hành bị chỉnh sửa, các rào cản hiện đại như SELinux, Sandbox ứng dụng hay Xác thực chữ ký đều có thể bị vô hiệu hóa hoàn toàn từ bên trong.
 
-Kịch bản demo bao gồm các bước chính:
+Demo này trình diễn một kịch bản tấn công nguy hiểm, nơi kẻ tấn công nạp một Kernel tùy chỉnh để:
 
-1. Chỉnh sửa Kernel để vô hiệu hóa SELinux
-2. Build và flash Kernel đã chỉnh sửa vào thiết bị
-3. Kernel tự động cài đặt một ứng dụng hệ thống giả mạo
-4. Ứng dụng hoạt động như một **keylogger chạy nền**
+* Vô hiệu hóa SELinux: Chuyển hệ thống từ phòng thủ chủ động sang trạng thái "mở cửa".
+
+* Duy trì mã độc vĩnh viễn: Chèn ứng dụng vào phân vùng hệ thống (/system), không thể xóa dù khôi phục cài đặt gốc.
+
+* Giám sát đặc quyền: Triển khai trình theo dõi thao tác bàn phím (Keylogger) chạy dưới quyền cao nhất. Duy trì mã độc ngay cả sau khi **Factory Reset**
+
 
 Mục tiêu của demo là minh họa một nguyên tắc quan trọng trong bảo mật hệ điều hành:
 
 > ### Nếu tầng Kernel bị xâm phạm, các cơ chế bảo mật ở tầng ứng dụng sẽ trở thành vô nghĩa.
 
 ---
+<br>
 
-# 1. Chỉnh sửa Kernel
+# Các phần chính:  
 
-Trong quá trình build Kernel, trạng thái của SELinux được thay đổi từ 1 thành 0:
+
+# 1. Chỉnh sửa Kernel: Triệt tiêu lớp phòng thủ SELinux
+
+SELinux là cơ chế **Mandatory Access Control (MAC)** của Android, có nhiệm vụ chặn các hành vi truy cập trái phép giữa các tiến trình.  
+
+Tiến hành can thiệp ngay từ mã nguồn khi build Kernel để ép hệ thống luôn ở chế độ **Permissive**.  
+
+Cách làm: Thay đổi cấu hình SELinux từ **1** về **0**.  
 
 > ### Enforcing → Permissive
 
 <div align="center">
   
-<img width="413"  src="https://github.com/user-attachments/assets/039b66ac-5acb-44c0-b868-bd690b102fee" />
+<img width="600"  src="https://github.com/user-attachments/assets/039b66ac-5acb-44c0-b868-bd690b102fee" />
 
 </div>
 
-SELinux là cơ chế **Mandatory Access Control (MAC)** của Android, có nhiệm vụ chặn các hành vi truy cập trái phép giữa các tiến trình.
-
-Khi chuyển sang chế độ **Permissive**, hệ thống chỉ ghi log vi phạm thay vì chặn chúng. Điều này khiến mã độc có thể thực thi nhiều hành vi nguy hiểm mà không bị ngăn chặn.
+<br>
+Khi chuyển sang chế độ **Permissive**, hệ thống chỉ ghi log vi phạm thay vì chặn chúng. Điều này khiến mã độc có thể thực thi nhiều hành vi nguy hiểm mà không bị ngăn chặn.  
 Có thể kiểm tra trạng thái SELinux sau khi cài đặt kernel bằng lệnh:
+
 ```shell
 adb shell getenforce
 ```
 
 <div align="center">
   
-<img width="748" src="https://github.com/user-attachments/assets/78d6d42a-ad6e-48cf-804f-d96bdca0c833" />
+<img width="450" src="https://github.com/user-attachments/assets/78d6d42a-ad6e-48cf-804f-d96bdca0c833" />
 
 </div>
 
 ---
 
-# 2. Cài đặt Kernel độc hại
+# 2. Kỹ thuật AnyKernel3: Chèn mã độc vào vùng cấm
 
 Kernel sau khi build được đóng gói cùng script cài đặt có tên: **anyKernel.sh**.
 
-Trước khi flash Kernel, mình chỉnh sửa script cài đặt (`anykernel.sh`) giúp chèn một ứng dụng giả tiến trình hệ thống vào thư mục: ***`/system/priv-app/`***  
-Các ứng dụng trong thư mục này được coi là **ứng dụng hệ thống đặc quyền**, có quyền truy cập cao hơn so với ứng dụng thông thường.
-Code thêm vào annykernel.sh:
+Trước khi flash Kernel, chỉnh sửa script **`anykernel.sh`** để ép hệ thống chấp nhận một ứng dụng APK lạ làm Ứng dụng hệ thống đặc quyền, ứng dụng được cài đặt vào phân vùng: **`/system/priv-app/`**  
+
+Đây là nơi chứa các **ứng dụng hệ thống đặc quyền**, có quyền truy cập cao hơn so với ứng dụng thông thường.  
+
+Code chèn vào annykernel.sh:  
 
 ```shell
 #Keylogger
@@ -107,22 +112,18 @@ fi
 
 ---
 
-# 3. Cơ chế hoạt động của Keylogger
+# 3. Cơ chế hoạt động của ứng dụng độc hại: Keylogger
 
-Ứng dụng được cài đặt có chức năng theo dõi các sự kiện nhập liệu trên thiết bị.
-
-Đặc điểm của ứng dụng:
+Ứng dụng hoạt động như một dịch vụ chạy ngầm hoàn hảo:  
 
 * Được cài đặt trong phân vùng hệ thống
-* Hoạt động ngầm trong nền
-* Không hiển thị biểu tượng trên màn hình
 * Tự khởi động khi thiết bị khởi động
+* Không hiển thị biểu tượng trên màn hình
+* Hoạt động ngầm trong nền
 
-Ứng dụng sử dụng **Accessibility Service** để theo dõi các sự kiện chứa văn bản trên màn hình.
+Nó lợi dụng Quyền trợ năng (Accessibility) để đọc mọi nội dung văn bản trên màn hình và gửi về máy chủ điều khiển (Telegram).  
 
-Dữ liệu thu thập sẽ được gửi đến một kênh giám sát từ xa như Telegram.
-
-(Lưu ý: Phần mã nguồn chi tiết mình xin phép không chia sẻ nhằm tránh rủi ro lạm dụng.)
+(Lưu ý: Phần mã nguồn ứng dụng mình xin phép không chia sẻ nhằm tránh rủi ro lạm dụng.)
 
 ---
 
@@ -160,7 +161,9 @@ Thuộc tính này cho phép ứng dụng chạy ngay sau khi thiết bị khở
 
 ---
 
-# 5. Tồn tại sau Factory Reset
+# 5. Khả năng tồn tại và Phục hồi  
+
+Điểm đáng sợ nhất của kỹ thuật này là khả năng Sống sót vĩnh viễn.  
 
 Factory Reset thông thường chỉ xóa dữ liệu trong các phân vùng:
 
@@ -184,7 +187,7 @@ Cách duy nhất để loại bỏ là:
 
 # Demo thực tế
 
-Video demo bên dưới  cho thấy các bước sau:
+Video minh chứng thực tế các bước tấn công và kết quả thu được:
 
 * Thiết bị khởi động bình thường sau khi flash Kernel
 * Kiểm tra SELinux trả về trạng thái **Permissive**
@@ -214,18 +217,16 @@ Facebook: https://facebook.com/share/v/18NQeqKrbS/
 
 ---
 
-# Kết luận
+# Tổng kết
 
 Demo này minh họa một nguyên tắc cốt lõi trong bảo mật hệ thống:
 
-> ### Nếu tầng Kernel bị xâm phạm, toàn bộ mô hình bảo mật của hệ điều hành có thể sụp đổ.
+> ### Nếu tầng Kernel bị xâm phạm, toàn bộ mô hình bảo mật phía trên của hệ điều hành đều có thể sụp đổ.
 
 Đó là lý do tại sao **an toàn mức nhân** luôn là nền tảng sống còn của mọi hệ điều hành.
 
 ---
 
-# Lưu ý
-
-Demo này được thực hiện **chỉ nhằm mục đích học tập và nghiên cứu an toàn thông tin**.
-
-Không khuyến khích hoặc hỗ trợ việc sử dụng các kỹ thuật này cho mục đích xâm phạm quyền riêng tư hoặc tấn công hệ thống.
+# ⚠️ Disclaimer:
+Dự án này được thực hiện bởi Phạm Khắc Sang, chỉ nhằm mục đích nghiên cứu học thuật.  
+Việc lạm dụng để xâm phạm quyền riêng tư hoặc phá hoại là hành vi vi phạm pháp luật và đạo đức nghề nghiệp.
