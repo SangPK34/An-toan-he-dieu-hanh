@@ -41,6 +41,6 @@ Thư mục này chứa các **bài tập labtainer cá nhân và các lệnh fix
 Hy vọng repo này sẽ hữu ích cho các bạn đang học hoặc tìm hiểu về **An toàn Hệ điều hành**.
 
 
-# Lưu ý
+# Lưu ý!
 
 Các nội dung trong repository chỉ phục vụ **mục đích học tập và nghiên cứu**.
