@@ -38,3 +38,22 @@ find ~/labtainer/trunk/labs/cmd_log/instr_config -type f -exec sed -i 's/\r$//' 
 chmod -R +x ~/labtainer/trunk/labs/cmd_log/instr_config
 docker rmi cmd_log.ubuntu.student.grader 2>/dev/null
 ```
+
+# Bài ProcessMonitor:
+```bash
+#Clone:
+cd /tmp
+git clone https://github.com/Dngchc/CDANM.git
+cp -r /tmp/CDANM/oss_process_monitor /home/student/labtainer/trunk/labs/
+cd /home/student/labtainer/trunk/scripts/labtainer-student
+rebuild -f -b oss_process_monitor
+
+#Fix:
+docker rm -f $(docker ps -aq) 2>/dev/null
+docker rmi oss_process_monitor.ubuntu.student.grader 2>/dev/null
+docker rmi oss_process_monitor.ubuntu.student 2>/dev/null
+find ~/labtainer/trunk/labs/oss_process_monitor/instr_config -type f -exec sed -i 's/\r$//' {} +
+chmod -R +x ~/labtainer/trunk/labs/oss_process_monitor/instr_config
+find ~/labtainer/trunk/labs/oss_process_monitor -exec touch {} +
+rm -f ~/.local/share/labtainer/current_lab
+```
